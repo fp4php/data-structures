@@ -9,7 +9,7 @@ namespace Fp\DataStructures\Hamt;
  */
 final class LeafNode extends LeafLikeNode {
 
-    protected string $tag = 'LEAF';
+    protected int $tag = 0;
 
     /**
      * @param int $hash
@@ -32,8 +32,13 @@ final class LeafNode extends LeafLikeNode {
     public function updated(int $shift, int $hash, mixed $key, mixed $value): AbstractNode
     {
         if ($key === $this->key) {
-            return $value === $this->value ? $this : new LeafNode($hash, $key, $value);
+            return
+                $value === $this->value
+                    ? $this // same entries
+                    : new LeafNode($hash, $key, $value); // same keys, different values
         } else {
+            // different keys
+            // merge leaf nodes into bitmap or collision node
             return $this->mergeLeaf($shift, new LeafNode($hash, $key, $value));
         }
     }

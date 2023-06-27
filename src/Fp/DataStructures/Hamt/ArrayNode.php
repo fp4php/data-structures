@@ -13,7 +13,7 @@ use SplFixedArray;
  */
 final class ArrayNode extends AbstractNode {
 
-    protected string $tag = 'ARRAY';
+    protected int $tag = 2;
 
     /**
      * @param int $size
@@ -33,10 +33,8 @@ final class ArrayNode extends AbstractNode {
      */
     public function updated(int $shift, int $hash, mixed $key, mixed $value): AbstractNode
     {
-        $count = $this->size;
-        $children = $this->children;
-        $frag = BitOps::hashFragment($shift, $hash);
-        $oldChild = $children[$frag];
+        $hashPart = BitOps::hashFragment($shift, $hash);
+        $oldChild = $this->children[$hashPart];
 
         $newChild = $oldChild
             ? $oldChild->updated($shift + 5, $hash, $key, $value)
@@ -46,14 +44,17 @@ final class ArrayNode extends AbstractNode {
             return $this;
         }
 
-        if (!$oldChild && $newChild) { // add
+        if (!$oldChild) { // add
             return new ArrayNode(
-                $count + 1,
-                SplFixedArrayOps::arrayUpdate($frag, $newChild, $children)
+                $this->size + 1,
+                SplFixedArrayOps::arrayUpdate($hashPart, $newChild, $this->children)
             );
         }
 
         // modify
-        return new ArrayNode($count, SplFixedArrayOps::arrayUpdate($frag, $newChild, $children));
+        return new ArrayNode(
+            $this->size,
+            SplFixedArrayOps::arrayUpdate($hashPart, $newChild, $this->children)
+        );
     }
 }

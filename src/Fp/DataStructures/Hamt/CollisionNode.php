@@ -3,7 +3,6 @@
 namespace Fp\DataStructures\Hamt;
 
 use Fp\DataStructures\SplFixedArrayOps;
-use Psalm\Type\Atomic\TValueOf;
 use SplFixedArray;
 
 /**
@@ -13,7 +12,7 @@ use SplFixedArray;
  */
 final class CollisionNode extends LeafLikeNode {
 
-    protected string $tag = 'COLLISION';
+    protected int $tag = 3;
 
     /**
      * @param int $hash

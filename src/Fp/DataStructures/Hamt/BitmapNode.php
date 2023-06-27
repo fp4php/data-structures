@@ -13,7 +13,7 @@ use SplFixedArray;
  */
 final class BitmapNode extends AbstractNode {
 
-    protected string $tag = 'BITMAP';
+    protected int $tag = 1;
 
     /**
      * @param int $bitmap
@@ -33,39 +33,42 @@ final class BitmapNode extends AbstractNode {
      */
     public function updated(int $shift, int $hash, mixed $key, mixed $value): AbstractNode
     {
-        $bitmap = $this->bitmap;
-        $children = $this->children;
-        $frag = BitOps::hashFragment($shift, $hash);
-        $bit = 1 << $frag;
-        $idx = BitOps::indexFromBitmap($bitmap, $bit);
-        $exists = $bitmap & $bit;
+        $fragment = BitOps::hashFragment($shift, $hash);
+        $bit = 1 << $fragment;
+        $idx = BitOps::indexFromBitmap($this->bitmap, $bit);
 
-        if ($exists) {
-            // modify
-            $current = $children[$idx];
-            $newChild = $current->updated($shift + 5, $hash, $key, $value);
+        if ($this->bitmap & $bit) { // child exists
+            $oldChild = $this->children[$idx];
+            $newChild = $oldChild->updated($shift + 5, $hash, $key, $value);
 
-            if ($current === $newChild) {
+            if ($oldChild === $newChild) {
+                // no modifications required
                 return $this;
             }
 
-            return new BitmapNode($bitmap, SplFixedArrayOps::arrayUpdate($idx, $newChild, $children));
-
-        } else {
-            // add
-            $newChild = new LeafNode($hash, $key, $value);
-            return $this->children->getSize() >= 16
-                ? $this->expand($frag, $newChild)
-                : new BitmapNode($bitmap | $bit, SplFixedArrayOps::arraySpliceIn($idx, $newChild, $children));
+            // replace old branch with new updated one
+            // no expansion needed because of the same children list size
+            $children = SplFixedArrayOps::arrayUpdate($idx, $newChild, $this->children);
+            return new BitmapNode($this->bitmap, $children);
         }
+
+        // child doesn't exist
+        // children list size will be increased
+        // thus decompression to array node may be needed
+        $newChild = new LeafNode($hash, $key, $value);
+        return $this->children->getSize() >= 16
+            ? $this->decompress($fragment, $newChild)
+            : new BitmapNode($this->bitmap | $bit, SplFixedArrayOps::arraySpliceIn($idx, $newChild, $this->children));
     }
 
     /**
+     * Decompress bitmap to array node and set node at given position
+     *
      * @param int $at
-     * @param AbstractNode<TKey, TValue> $child
+     * @param AbstractNode<TKey, TValue> $node
      * @return ArrayNode<TKey, TValue>
      */
-    private function expand(int $at, AbstractNode $child): ArrayNode
+    private function decompress(int $at, AbstractNode $node): ArrayNode
     {
         $len = PHP_INT_SIZE * 8 - BitOps::numberOfLeadingZeros($this->bitmap | (1 << $at));
         $arr = new SplFixedArray($len);
@@ -79,7 +82,7 @@ final class BitmapNode extends AbstractNode {
             $bit = BitOps::unsignedRightShift($bit, 1);
         }
 
-        $arr[$at] = $child;
+        $arr[$at] = $node;
 
         return new ArrayNode($count + 1, $arr);
     }

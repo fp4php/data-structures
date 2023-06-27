@@ -23,6 +23,7 @@ class BitOps
     }
 
     // >>> operator analog
+    // always use zero as a filler
     public static function unsignedRightShift(int $n, int $p): int
     {
         if ($p == 0) return $n;
