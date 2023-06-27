@@ -1,5 +1,5 @@
 {
-    "name": "fp4php/datastructures",
+    "name": "fp4php/data-structures",
     "description": "PHP immutable data structures library",
     "type": "library",
     "authors": [
