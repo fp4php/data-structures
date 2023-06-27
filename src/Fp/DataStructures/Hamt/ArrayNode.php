@@ -9,15 +9,15 @@ use SplFixedArray;
 /**
  * @template TKey
  * @template TValue
- * @extends HashArrayMappedTrie<TKey, TValue>
+ * @extends AbstractNode<TKey, TValue>
  */
-final class ArrayNode extends HashArrayMappedTrie {
+final class ArrayNode extends AbstractNode {
 
     protected string $tag = 'ARRAY';
 
     /**
      * @param int $size
-     * @param SplFixedArray<HashArrayMappedTrie<TKey, TValue>> $children
+     * @param SplFixedArray<AbstractNode<TKey, TValue>> $children
      */
     public function __construct(
         public readonly int $size,
@@ -29,9 +29,9 @@ final class ArrayNode extends HashArrayMappedTrie {
      * @param int $hash
      * @param TKey $key
      * @param TValue $value
-     * @return HashArrayMappedTrie<TKey, TValue>
+     * @return AbstractNode<TKey, TValue>
      */
-    public function updated(int $shift, int $hash, mixed $key, mixed $value): HashArrayMappedTrie
+    public function updated(int $shift, int $hash, mixed $key, mixed $value): AbstractNode
     {
         $count = $this->size;
         $children = $this->children;

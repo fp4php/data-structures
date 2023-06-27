@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Hamt;
+namespace Tests;
 
 use Fp\DataStructures\BitOps;
 use PHPUnit\Framework\TestCase;

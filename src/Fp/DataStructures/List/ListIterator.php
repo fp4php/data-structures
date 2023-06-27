@@ -11,16 +11,16 @@ use Iterator;
  * @template TV
  * @implements Iterator<int, TV>
  */
-final class LinkedListIterator implements Iterator
+final class ListIterator implements Iterator
 {
-    private LinkedList $originalList;
-    private LinkedList $list;
+    private AbstractNode $originalList;
+    private AbstractNode $list;
     private int $idx;
 
     /**
-     * @param LinkedList<TV> $list
+     * @param AbstractNode<TV> $list
      */
-    public function __construct(LinkedList $list)
+    public function __construct(AbstractNode $list)
     {
         $this->originalList = $this->list = $list;
         $this->idx = 0;
@@ -28,14 +28,14 @@ final class LinkedListIterator implements Iterator
 
     public function current(): mixed
     {
-        return $this->list instanceof Cons
+        return $this->list instanceof ConsNode
             ? $this->list->head
             : null;
     }
 
     public function next(): void
     {
-        if ($this->list instanceof Cons) {
+        if ($this->list instanceof ConsNode) {
             $this->list = $this->list->tail;
             $this->idx++;
         }
@@ -48,7 +48,7 @@ final class LinkedListIterator implements Iterator
 
     public function valid(): bool
     {
-        return $this->list instanceof Cons;
+        return $this->list instanceof ConsNode;
     }
 
     public function rewind(): void

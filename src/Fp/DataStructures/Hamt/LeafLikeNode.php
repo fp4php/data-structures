@@ -9,36 +9,42 @@ use SplFixedArray;
 /**
  * @template TKey
  * @template TValue
- * @extends HashArrayMappedTrie<TKey, TValue>
+ * @extends AbstractNode<TKey, TValue>
  */
-abstract class LeafLikeNode extends HashArrayMappedTrie {
-    public function merge(int $shift, LeafNode $rhs): HashArrayMappedTrie
+abstract class LeafLikeNode extends AbstractNode
+{
+    public function mergeLeaf(int $shift, LeafNode $that): AbstractNode
     {
-        $lhs = $this;
-
-        if ($lhs->hash == $rhs->hash) {
-            if ($lhs instanceof CollisionNode) {
-                $children = SplFixedArrayOps::arraySpliceIn($lhs->children->getSize(), $rhs, $lhs->children);
+        if ($this->hash == $that->hash) {
+            // collision
+            if ($this instanceof CollisionNode) {
+                $children = SplFixedArrayOps::arrayPrepend($that, $this->children);
             } else {
                 $children = new SplFixedArray(2);
-                $children[0] = $rhs;
-                $children[1] = $lhs;
+                $children[0] = $that;
+                $children[1] = $this;
             }
             return new CollisionNode($this->hash, $children);
         }
 
-        $lhsFrag = BitOps::hashFragment($shift, $lhs->hash);
-        $rhsFrag = BitOps::hashFragment($shift, $rhs->hash);
+        // no collision
+        $thisFrag = BitOps::hashFragment($shift, $this->hash);
+        $thatFrag = BitOps::hashFragment($shift, $that->hash);
 
-        if ($lhsFrag == $rhsFrag) {
+        if ($thisFrag == $thatFrag) {
+            // same hash fragments
+            // unable to place nodes in the same bitmap
+            // shift down to the next level
             $children = new SplFixedArray(1);
-            $children[0] = $lhs->merge($shift + 5, $rhs);;
+            $children[0] = $this->mergeLeaf($shift + 5, $that);;
         } else {
+            // different hash fragments
+            // able to place nodes in the same bitmap
             $children = new SplFixedArray(2);
-            $children[0] = $lhsFrag < $rhsFrag ? $lhs : $rhs;
-            $children[1] = $lhsFrag < $rhsFrag ? $rhs : $lhs;
+            $children[0] = $thisFrag < $thatFrag ? $this : $that;
+            $children[1] = $thisFrag < $thatFrag ? $that : $this;
         }
 
-        return new BitmapNode((1 << $lhsFrag) | (1 << $rhsFrag), $children);
+        return new BitmapNode((1 << $thisFrag) | (1 << $thatFrag), $children);
     }
 }

@@ -6,17 +6,17 @@ namespace Fp\DataStructures\List;
 
 /**
  * @template-covariant TValue
- * @extends LinkedList<TValue>
+ * @extends AbstractNode<TValue>
  */
-final class Cons extends LinkedList
+final class ConsNode extends AbstractNode
 {
     /**
      * @param TValue $head
-     * @param LinkedList<TValue> $tail
+     * @param AbstractNode<TValue> $tail
      */
     public function __construct(
-        public mixed $head,
-        public LinkedList $tail
+        public mixed        $head,
+        public AbstractNode $tail
     ) { }
 
     public function head(): mixed
@@ -24,7 +24,7 @@ final class Cons extends LinkedList
         return $this->head;
     }
 
-    public function tail(): LinkedList
+    public function tail(): AbstractNode
     {
         return $this->tail;
     }

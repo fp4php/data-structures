@@ -12,12 +12,21 @@ use Traversable;
  * @template TValue
  * @implements IteratorAggregate<TKey, TValue>
  */
-abstract class HashArrayMappedTrie implements IteratorAggregate {
+abstract class AbstractNode implements IteratorAggregate {
 
     /**
      * @var 'LEAF'|'COLLISION'|'BITMAP'|'ARRAY'
      */
     protected string $tag;
+
+    /**
+     * @param int $shift
+     * @param int $hash
+     * @param TKey $key
+     * @param TValue $value
+     * @return AbstractNode<TKey, TValue>
+     */
+    abstract public function updated(int $shift, int $hash, mixed $key, mixed $value): AbstractNode;
 
     public function getIterator(): Traversable
     {
@@ -25,10 +34,11 @@ abstract class HashArrayMappedTrie implements IteratorAggregate {
     }
 
     /**
-     * @param HashArrayMappedTrie $node
+     * @param AbstractNode $node
      * @return Generator<TKey, TValue>
      */
-    private function iterate(HashArrayMappedTrie $node): Generator {
+    private function iterate(AbstractNode $node): Generator
+    {
         switch ($node->tag) {
             case 'LEAF':
                 /** @var LeafNode $node */
@@ -46,20 +56,12 @@ abstract class HashArrayMappedTrie implements IteratorAggregate {
     }
 
     /**
-     * @param int $shift
-     * @param int $hash
-     * @param TKey $key
-     * @param TValue $value
-     * @return HashArrayMappedTrie<TKey, TValue>
-     */
-    abstract public function updated(int $shift, int $hash, mixed $key, mixed $value): HashArrayMappedTrie;
-
-    /**
      * @param int $hash
      * @param TKey $key
      * @return TValue|null
      */
-    public function get(mixed $key, int $hash): mixed {
+    public function get(mixed $key, int $hash): mixed
+    {
         $node = $this;
         $shift = 0;
 

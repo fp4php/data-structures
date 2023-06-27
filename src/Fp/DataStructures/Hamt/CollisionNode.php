@@ -3,6 +3,7 @@
 namespace Fp\DataStructures\Hamt;
 
 use Fp\DataStructures\SplFixedArrayOps;
+use Psalm\Type\Atomic\TValueOf;
 use SplFixedArray;
 
 /**
@@ -28,45 +29,49 @@ final class CollisionNode extends LeafLikeNode {
      * @param int $hash
      * @param TKey $key
      * @param TValue $value
-     * @return HashArrayMappedTrie<TKey, TValue>
+     * @return AbstractNode<TKey, TValue>
      */
-    public function updated(int $shift, int $hash, mixed $key, mixed $value): HashArrayMappedTrie
+    public function updated(int $shift, int $hash, mixed $key, mixed $value): AbstractNode
     {
         if ($hash !== $this->hash) {
-            return $this->merge($shift, new LeafNode($hash, $key, $value));
+            // different hashes
+            // merge collision node with leaf node into bitmap node
+            return $this->mergeLeaf($shift, new LeafNode($hash, $key, $value));
         }
 
-        $list = $this->updateCollisionList($this->hash, $this->children, $key, $value);
+        // same hashes = collision
 
-        if ($list === $this->children) {
-            return $this;
+        foreach ($this->children as $idx => $child) {
+            if ($child->key === $key) {
+                if ($value === $child->value) {
+                    // entry already present in collision list
+                    // no modifications required
+                    return $this;
+                }
+
+                // same entry keys, different entry values
+                // modify entry value
+                $children = SplFixedArrayOps::arrayUpdate($idx, new LeafNode($hash, $key, $value), $this->children);
+                return $this->collapseSingle($hash, $children);
+            }
         }
 
-        return $list->getSize() > 1
-            ? new CollisionNode($this->hash, $list)
-            : $list[0]; // collapse single element collision list
+        // no entries with given key
+        // add entry to collision list
+        $children = SplFixedArrayOps::arrayAppend(new LeafNode($hash, $key, $value), $this->children);
+        return $this->collapseSingle($hash, $children);
     }
 
     /**
      * @param int $hash
-     * @param SplFixedArray<LeafNode> $list
-     * @param TKey $key
-     * @param TValue $value
-     * @return SplFixedArray<LeafNode>
+     * @param SplFixedArray<LeafNode<TKey, TValue>> $children
+     * @return AbstractNode<TKey, TValue>
      */
-    public function updateCollisionList(int $hash, SplFixedArray $list, mixed $key, mixed $value): SplFixedArray
+    private function collapseSingle(int $hash, SplFixedArray $children): AbstractNode
     {
-        $len = $list->getSize();
-
-        for ($i = 0; $i < $len; ++$i) {
-            $child = $list[$i];
-            if ($child->key === $key) {
-                return $value === $child->value
-                    ? $list
-                    : SplFixedArrayOps::arrayUpdate($i, new LeafNode($hash, $key, $value), $list);
-            }
-        }
-
-        return SplFixedArrayOps::arraySpliceIn($len, new LeafNode($hash, $key, $value), $list);
+        return $children->getSize() > 1
+            ? new CollisionNode($hash, $children)
+            : $children[0]; // collapse single element collision list
     }
+
 }

@@ -15,7 +15,8 @@ class SplFixedArrayOps
      * @param SplFixedArray<TValue> $arr
      * @return SplFixedArray<TValue>
      */
-    public static function arrayUpdate(int $at, mixed $val, SplFixedArray $arr): SplFixedArray {
+    public static function arrayUpdate(int $at, mixed $val, SplFixedArray $arr): SplFixedArray
+    {
         $len = $arr->getSize();
         $out = new SplFixedArray($len);
 
@@ -36,7 +37,8 @@ class SplFixedArrayOps
      * @param SplFixedArray<TValue> $arr
      * @return SplFixedArray<TValue>
      */
-    public static function arraySpliceOut(int $at, SplFixedArray $arr): SplFixedArray {
+    public static function arraySpliceOut(int $at, SplFixedArray $arr): SplFixedArray
+    {
         $len = $arr->getSize();
         $out = new SplFixedArray($len - 1);
         $i = $j = 0;
@@ -63,7 +65,8 @@ class SplFixedArrayOps
      * @param SplFixedArray<TValue> $arr
      * @return SplFixedArray<TValue>
      */
-    public static function arraySpliceIn(int $at, mixed $val, SplFixedArray $arr): SplFixedArray {
+    public static function arraySpliceIn(int $at, mixed $val, SplFixedArray $arr): SplFixedArray
+    {
         $len = $arr->getSize();
         $out = new SplFixedArray($len + 1);
         $i = $j = 0;
@@ -79,5 +82,27 @@ class SplFixedArrayOps
         }
 
         return $out;
+    }
+
+    /**
+     * @template TValue
+     * @param TValue $val
+     * @param SplFixedArray<TValue> $arr
+     * @return SplFixedArray<TValue>
+     */
+    public static function arrayAppend(mixed $val, SplFixedArray $arr): SplFixedArray
+    {
+        return self::arraySpliceIn($arr->getSize(), $val, $arr);
+    }
+
+    /**
+     * @template TValue
+     * @param TValue $val
+     * @param SplFixedArray<TValue> $arr
+     * @return SplFixedArray<TValue>
+     */
+    public static function arrayPrepend(mixed $val, SplFixedArray $arr): SplFixedArray
+    {
+        return self::arraySpliceIn(0, $val, $arr);
     }
 }

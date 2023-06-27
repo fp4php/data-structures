@@ -10,17 +10,17 @@ use IteratorAggregate;
 /**
  * @template-covariant TValue
  */
-abstract class LinkedList implements IteratorAggregate
+abstract class AbstractNode implements IteratorAggregate
 {
     /**
      * @template TValueIn
      *
      * @param TValueIn $elem
-     * @return LinkedList<TValue|TValueIn>
+     * @return AbstractNode<TValue|TValueIn>
      */
-    public function prepended(mixed $elem): LinkedList
+    public function prepended(mixed $elem): AbstractNode
     {
-        return new Cons($elem, $this);
+        return new ConsNode($elem, $this);
     }
 
     /**
@@ -28,7 +28,7 @@ abstract class LinkedList implements IteratorAggregate
      */
     public function getIterator(): Iterator
     {
-        return new LinkedListIterator($this);
+        return new ListIterator($this);
     }
 
     abstract public function isEmpty(): bool;
@@ -39,7 +39,7 @@ abstract class LinkedList implements IteratorAggregate
     abstract public function head(): mixed;
 
     /**
-     * @return LinkedList<TValue>
+     * @return AbstractNode<TValue>
      */
-    abstract public function tail(): LinkedList;
+    abstract public function tail(): AbstractNode;
 }

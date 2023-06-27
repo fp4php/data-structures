@@ -5,19 +5,19 @@ declare(strict_types=1);
 namespace Fp\DataStructures\List;
 
 /**
- * @extends LinkedList<empty>
+ * @extends AbstractNode<empty>
  */
-final class Nil extends LinkedList
+final class NilNode extends AbstractNode
 {
-    private static ?Nil $instance = null;
+    private static ?NilNode $instance = null;
 
     private function __construct() {
         self::$instance = $this;
     }
 
-    public static function getInstance(): Nil
+    public static function getInstance(): NilNode
     {
-        return self::$instance ?? new Nil();
+        return self::$instance ?? new NilNode();
     }
 
     public function head(): mixed
@@ -25,7 +25,7 @@ final class Nil extends LinkedList
         return null;
     }
 
-    public function tail(): LinkedList
+    public function tail(): AbstractNode
     {
         return $this;
     }

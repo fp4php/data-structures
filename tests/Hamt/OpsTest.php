@@ -2,13 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Hamt;
+namespace Tests\Hamt;
 
-use Fp\DataStructures\BitOps;
 use Fp\DataStructures\Hamt\LeafNode;
 use PHPUnit\Framework\TestCase;
 
-final class HashArrayMappedTrieTest extends TestCase
+final class OpsTest extends TestCase
 {
     public function testGet(): void
     {

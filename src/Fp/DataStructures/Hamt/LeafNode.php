@@ -27,14 +27,14 @@ final class LeafNode extends LeafLikeNode {
      * @param int $hash
      * @param TKey $key
      * @param TValue $value
-     * @return HashArrayMappedTrie<TKey, TValue>
+     * @return AbstractNode<TKey, TValue>
      */
-    public function updated(int $shift, int $hash, mixed $key, mixed $value): HashArrayMappedTrie
+    public function updated(int $shift, int $hash, mixed $key, mixed $value): AbstractNode
     {
         if ($key === $this->key) {
             return $value === $this->value ? $this : new LeafNode($hash, $key, $value);
         } else {
-            return $this->merge($shift, new LeafNode($hash, $key, $value));
+            return $this->mergeLeaf($shift, new LeafNode($hash, $key, $value));
         }
     }
 }
