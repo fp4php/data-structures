@@ -1,0 +1,10 @@
+version: '3.6'
+services:
+  php:
+    build:
+      dockerfile: Dockerfile
+      context: ./docker
+    tty: true
+    working_dir: /app
+    volumes:
+      - ./:/app

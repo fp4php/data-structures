@@ -1,0 +1,32 @@
+{
+    "name": "fp4php/datastructures",
+    "description": "PHP immutable data structures library",
+    "type": "library",
+    "authors": [
+        {
+            "name": "whsv26",
+            "email": "whsv26@gmail.com"
+        }
+    ],
+    "license": "MIT",
+    "scripts": {
+        "test": "vendor/bin/phpunit"
+    },
+    "require": {
+        "php": "^8.1"
+    },
+    "require-dev": {
+        "vimeo/psalm": "^5.7",
+        "phpunit/phpunit": "^9"
+    },
+    "autoload": {
+        "psr-4": {
+            "Fp\\DataStructures\\": "src/Fp/DataStructures"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    }
+}
