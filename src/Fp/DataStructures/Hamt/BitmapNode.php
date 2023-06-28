@@ -62,6 +62,46 @@ final class BitmapNode extends AbstractNode {
     }
 
     /**
+     * @param int $shift
+     * @param int $hash
+     * @param TKey $key
+     * @return AbstractNode<TKey, TValue>|null
+     */
+    public function removed(int $shift, int $hash, mixed $key): ?AbstractNode
+    {
+        $bit = 1 << BitOps::hashFragment($shift, $hash);
+
+        if (!($this->bitmap & $bit)) {
+            return $this;
+        }
+
+        // old child exists
+        $idx = BitOps::indexFromBitmap($this->bitmap, $bit);
+        $oldChild = $this->children[$idx];
+        $newChild = $oldChild->removed($shift + 5, $hash, $key);
+
+        if ($newChild == $oldChild) {
+            // key not found in the branch
+            return $this;
+        }
+
+        if (!$newChild) {
+            // whole branch is removed
+            $bitmap = $this->bitmap & ~$bit;
+            return $bitmap
+                ? new BitmapNode($bitmap, SplFixedArrayOps::arraySpliceOut($idx, $this->children))
+                : null;
+        }
+
+        // old branch was modified
+        // replace old branch with modified one
+        return new BitmapNode(
+            $this->bitmap,
+            SplFixedArrayOps::arrayUpdate($idx, $newChild, $this->children)
+        );
+    }
+
+    /**
      * Decompress bitmap to array node and set node at given position
      *
      * @param int $at

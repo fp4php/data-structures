@@ -27,6 +27,26 @@ final class CollisionNode extends LeafLikeNode {
      * @param int $shift
      * @param int $hash
      * @param TKey $key
+     * @return AbstractNode<TKey, TValue>|null
+     */
+    public function removed(int $shift, int $hash, mixed $key): ?AbstractNode
+    {
+        foreach ($this->children as $idx => $child) {
+            if ($child->key === $key) {
+                // entry is found by key
+                // remove this entry from collision list
+                $children = SplFixedArrayOps::arraySpliceOut($idx, $this->children);
+                return $this->collapseSingle($hash, $children);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param int $shift
+     * @param int $hash
+     * @param TKey $key
      * @param TValue $value
      * @return AbstractNode<TKey, TValue>
      */

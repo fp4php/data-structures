@@ -42,4 +42,15 @@ final class LeafNode extends LeafLikeNode {
             return $this->mergeLeaf($shift, new LeafNode($hash, $key, $value));
         }
     }
+
+    /**
+     * @param int $shift
+     * @param int $hash
+     * @param TKey $key
+     * @return AbstractNode<TKey, TValue>|null
+     */
+    public function removed(int $shift, int $hash, mixed $key): ?AbstractNode
+    {
+        return $this->key == $key ? null : $this;
+    }
 }

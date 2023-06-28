@@ -30,6 +30,14 @@ abstract class AbstractNode implements IteratorAggregate {
      */
     abstract public function updated(int $shift, int $hash, mixed $key, mixed $value): AbstractNode;
 
+    /**
+     * @param int $shift
+     * @param int $hash
+     * @param TKey $key
+     * @return AbstractNode<TKey, TValue>|null
+     */
+    abstract public function removed(int $shift, int $hash, mixed $key): ?AbstractNode;
+
     public function getIterator(): Traversable
     {
         return $this->iterate($this);
