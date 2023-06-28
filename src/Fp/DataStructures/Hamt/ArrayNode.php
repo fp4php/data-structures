@@ -34,7 +34,7 @@ final class ArrayNode extends AbstractNode {
     public function updated(int $shift, int $hash, mixed $key, mixed $value): AbstractNode
     {
         $hashPart = BitOps::hashFragment($shift, $hash);
-        $oldChild = $this->children[$hashPart];
+        $oldChild = $this->children[$hashPart] ?? null;
 
         $newChild = $oldChild
             ? $oldChild->updated($shift + 5, $hash, $key, $value)
@@ -67,7 +67,7 @@ final class ArrayNode extends AbstractNode {
     public function removed(int $shift, int $hash, mixed $key): ?AbstractNode
     {
         $hashPart = BitOps::hashFragment($shift, $hash);
-        $oldChild = $this->children[$hashPart];
+        $oldChild = $this->children[$hashPart] ?? null;
 
         if (!$oldChild) {
             return $this;

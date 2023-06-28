@@ -17,10 +17,10 @@ class SplFixedArrayOps
      */
     public static function arrayUpdate(int $at, mixed $val, SplFixedArray $arr): SplFixedArray
     {
-        $len = $arr->getSize();
+        $len = $at >= $arr->getSize() ? $at + 1 : $arr->getSize();
         $out = new SplFixedArray($len);
 
-        for ($i = 0; $i < $len; ++$i) {
+        for ($i = 0; $i < $arr->getSize(); ++$i) {
             $out[$i] = $arr[$i];
         }
 

@@ -56,4 +56,15 @@ final class SplFixedArrayOpsTest extends TestCase
         $this->assertEquals($expected, $actual);
     }
 
+    public function testArrayUpdate(): void
+    {
+        $arr = new SplFixedArray(3);
+        $arr[0] = 0;
+        $arr[1] = 1;
+        $arr[2] = 2;
+        $actual = SplFixedArrayOps::arrayUpdate(5, 5, $arr);
+        $actual = SplFixedArrayOps::arrayUpdate(2, 22, $actual);
+
+        $this->assertEquals([0, 1, 22, null, null, 5], $actual->toArray());
+    }
 }
