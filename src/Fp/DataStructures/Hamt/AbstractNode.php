@@ -95,7 +95,7 @@ abstract class AbstractNode implements IteratorAggregate {
                     return null;
                 case 2:
                     /** @var ArrayNode $node */
-                    $node = $node->children[BitOps::hashFragment($shift, $hash)];
+                    $node = $node->children[BitOps::hashFragment($shift, $hash)] ?? null;
                     if ($node) {
                         $shift += 5;
                         break;
