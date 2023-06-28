@@ -9,6 +9,7 @@ use IteratorAggregate;
 
 /**
  * @template-covariant TValue
+ * @implements IteratorAggregate<int, TValue>
  */
 abstract class AbstractNode implements IteratorAggregate
 {

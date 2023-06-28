@@ -59,7 +59,9 @@ abstract class AbstractNode implements IteratorAggregate {
             case 3:
                 /** @var BitmapNode|ArrayNode|CollisionNode $node */
                 foreach ($node->children as $child) {
-                    yield from $this->iterate($child);
+                    if ($child) {
+                        yield from $this->iterate($child);
+                    }
                 }
                 break;
         }

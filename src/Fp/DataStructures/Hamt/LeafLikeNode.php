@@ -13,8 +13,16 @@ use SplFixedArray;
  */
 abstract class LeafLikeNode extends AbstractNode
 {
-    // produce nested bitmap nodes or collision node
-    public function mergeLeaf(int $shift, LeafNode $that): BitmapNode|CollisionNode
+    public readonly int $hash;
+
+    /**
+     * Produce nested bitmap nodes or collision node
+     *
+     * @param int $shift
+     * @param LeafNode<TKey, TValue> $that
+     * @return AbstractNode<TKey, TValue>
+     */
+    public function mergeLeaf(int $shift, LeafNode $that): AbstractNode
     {
         if ($this->hash == $that->hash) {
             // collision

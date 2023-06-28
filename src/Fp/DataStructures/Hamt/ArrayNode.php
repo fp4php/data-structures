@@ -17,7 +17,7 @@ final class ArrayNode extends AbstractNode {
 
     /**
      * @param int $size
-     * @param SplFixedArray<AbstractNode<TKey, TValue>> $children
+     * @param SplFixedArray<null|AbstractNode<TKey, TValue>> $children
      */
     public function __construct(
         public readonly int $size,
